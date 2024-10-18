@@ -1,0 +1,7 @@
+services:
+  go:
+    build:
+      context: .
+      dockerfile: docker/go/Dockerfile
+    volumes:
+      - ./langs/go:/src
