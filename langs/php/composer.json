@@ -1,0 +1,10 @@
+{
+  "name": "michi-is/vanilla-warmups",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Michi\\": "src/"
+    }
+  },
+  "require": {}
+}

@@ -5,9 +5,26 @@ services:
       dockerfile: docker/go/Dockerfile
     volumes:
       - ./langs/go:/src
+    env_file:
+      - .env
+
   node:
     build:
       context: .
       dockerfile: docker/node/Dockerfile
     volumes:
       - ./langs/node:/src
+    env_file:
+      - .env
+
+  php:
+    build: docker/php
+    volumes:
+      - ./langs/php:/src
+      - ./data/composer:/root/.composer
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/xdebug:/xdebug
+    ports:
+      - $DOCKER_PHP_PUBLIC_PORT:80
+    env_file:
+      - .env
