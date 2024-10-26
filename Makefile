@@ -26,7 +26,15 @@ start:
 # Example: make go run main.go
 .PHONY: go
 go:
-	@docker compose exec go go $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose exec go go $(filter-out $@, $(MAKECMDGOALS))
+
+# node - run nodejs commands
+#
+# Usage: make node command
+# Example: make node main.js
+.PHONY: node
+node:
+	@docker compose exec node node $(filter-out $@, $(MAKECMDGOALS))
 
 # ignore any command that is not defined
 %:

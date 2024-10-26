@@ -5,3 +5,9 @@ services:
       dockerfile: docker/go/Dockerfile
     volumes:
       - ./langs/go:/src
+  node:
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+    volumes:
+      - ./langs/node:/src
