@@ -1,17 +1,13 @@
 services:
   go:
-    build:
-      context: .
-      dockerfile: docker/go/Dockerfile
+    build: docker/go
     volumes:
       - ./langs/go:/src
     env_file:
       - .env
 
   node:
-    build:
-      context: .
-      dockerfile: docker/node/Dockerfile
+    build: docker/node
     volumes:
       - ./langs/node:/src
     env_file:

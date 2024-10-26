@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import os
+
+def docker_exec(service, *args):
+    command = ["docker", "compose", "exec", service] + list(args)
+    subprocess.run(command)
+
+def go(*args):
+    docker_exec("go", "go", *args)
+
+def node(*args):
+    docker_exec("node", "node", *args)
+
+def php(*args):
+    docker_exec("php", "php", *args)
+
+def php_composer(*args):
+    docker_exec("php", "composer", *args)
+
+def php_server():
+    docker_exec("php", "php", "-S", "0.0.0.0:80", "-t", "public/")
+
+def main():
+    commands = {
+        "go": go,
+        "node": node,
+        "php": php,
+        "php-composer": php_composer,
+        "php-server": php_server
+    }
+
+    if len(sys.argv) < 2:
+        print("Usage: bin/playground <command> [arguments]")
+        print("Available commands:", ", ".join(commands.keys()))
+        sys.exit(1)
+
+    command = sys.argv[1]
+    args = sys.argv[2:]
+
+    if command in commands:
+        commands[command](*args)
+    else:
+        print(f"Unknown command: {command}")
+        print("Available commands:", ", ".join(commands.keys()))
+
+if __name__ == "__main__":
+    main()
