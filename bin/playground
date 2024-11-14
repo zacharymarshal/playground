@@ -23,13 +23,17 @@ def php_composer(*args):
 def php_server():
     docker_exec("php", "php", "-S", "0.0.0.0:80", "-t", "public/")
 
+def psql(*args):
+    docker_exec("postgres", "psql", *args)
+
 def main():
     commands = {
         "go": go,
         "node": node,
         "php": php,
         "php-composer": php_composer,
-        "php-server": php_server
+        "php-server": php_server,
+        "psql": psql,
     }
 
     if len(sys.argv) < 2:
