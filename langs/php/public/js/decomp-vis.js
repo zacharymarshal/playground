@@ -86,6 +86,7 @@ const vis = (p) => {
     p.stroke(0);
     drawWobblyLine(startX, y, endX, y, lineRandomness);
 
+    let gap = (endX - startX) / (numPoints - 1);
     for (let i = 0; i < numPoints; i++) {
       let x = startX + i * gap;
       drawWobblyLine(x, y - 10, x, y + 10, tickMarkRandomness);
@@ -120,7 +121,7 @@ const vis = (p) => {
     p.stroke(200, 0, 0);
     p.strokeWeight(2);
 
-    progress += 0.09;
+    progress += 0.2;
 
     let currentRandomness = p.map(progress, 0, p.PI, 0.1, arcRandomness);
     currentRandomness = p.constrain(currentRandomness, 0, arcRandomness);
