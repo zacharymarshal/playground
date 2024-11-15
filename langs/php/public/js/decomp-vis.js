@@ -1,3 +1,204 @@
+const drawLine = (p, x1, y1, x2, y2) => {
+  p.stroke(0);
+  p.strokeWeight(2);
+  p.noFill();
+
+  const len = p.dist(x1, y1, x2, y2);
+  const numSegments = p.constrain(len / 30, 2, 6);
+
+  p.beginShape();
+
+  p.vertex(x1, y1);
+  p.curveVertex(x1, y1);
+
+  for (let i = 1; i < numSegments; i++) {
+    const t = i / numSegments;
+    const x = p.lerp(x1, x2, t);
+    const y = p.lerp(y1, y2, t);
+
+    const offsetX = p.random(-1, 1);
+    const offsetY = p.random(-1, 1);
+
+    p.curveVertex(x + offsetX, y + offsetY);
+  }
+
+  p.curveVertex(x2, y2);
+  p.vertex(x2, y2);
+
+  p.endShape();
+};
+
+const drawCircle = (p, x, y, radius, fill = false) => {
+  p.fill("green");
+  p.stroke(0);
+  p.strokeWeight(2);
+  const points = 10;
+  p.beginShape();
+  for (let i = 0; i < points; i++) {
+    const angle = p.map(i, 0, points, 0, p.TWO_PI);
+    const offsetX = p.random(-1, 1);
+    const offsetY = p.random(-1, 1);
+    const px = x + radius * p.cos(angle) + offsetX;
+    const py = y + radius * p.sin(angle) + offsetY;
+    p.curveVertex(px, py);
+  }
+  p.endShape(p.CLOSE);
+};
+
+const drawMarker = (p, x, y, text) => {
+  drawCircle(p, x, y, 5, true);
+  p.noStroke();
+  p.textFont("Comic Sans MS");
+  p.textSize(21);
+  p.fill(0);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.text(text, x + 25, y + 3);
+};
+
+const drawArrow = (p, position, target) => {
+  const size = 10;
+  const randomness = 1.5;
+
+  const angle = p.atan2(position.y - target.y, position.x - target.x);
+  const angleOffset = p.PI / 5;
+
+  const angle1 = angle + angleOffset;
+  const angle2 = angle - angleOffset;
+
+  const x1 =
+    target.x + size * p.cos(angle1) + p.random(-randomness, randomness);
+  const y1 =
+    target.y + size * p.sin(angle1) + p.random(-randomness, randomness);
+
+  const x2 =
+    target.x + size * p.cos(angle2) + p.random(-randomness, randomness);
+  const y2 =
+    target.y + size * p.sin(angle2) + p.random(-randomness, randomness);
+
+  p.stroke(0);
+  p.strokeWeight(2);
+  p.line(target.x, target.y, x1, y1);
+  p.line(target.x, target.y, x2, y2);
+};
+
+const drawOpenNumberLine = (p, points) => {
+  drawLine(p, points.x1, points.y1, points.x2, points.y2);
+
+  drawArrow(
+    p,
+    { x: points.x1, y: points.y1 },
+    { x: points.x1, y: points.y1 - 1 },
+  );
+  drawArrow(
+    p,
+    { x: points.x2, y: points.y2 },
+    { x: points.x2, y: points.y2 + 1 },
+  );
+};
+
+const drawArc = (p, x, y1, y2, label = "") => {
+  const randomness = 1;
+  const segments = 30;
+  const arcWidth = 60;
+
+  p.noFill();
+  p.stroke(0);
+  p.strokeWeight(2);
+  p.beginShape();
+
+  for (let i = 0; i <= segments; i++) {
+    let t = i / segments;
+
+    let ny = p.lerp(y1, y2, t);
+
+    let offset = Math.sin(t * Math.PI) * arcWidth;
+    let nx = x - offset + p.random(-randomness, randomness);
+    let wobblyY = ny + p.random(-randomness, randomness);
+
+    p.vertex(nx, wobblyY);
+  }
+
+  p.endShape();
+
+  if (label) {
+    p.textFont("Comic Sans MS");
+    p.textSize(21);
+    p.fill(0);
+    p.noStroke();
+    p.textAlign(p.RIGHT, p.CENTER);
+    p.text(label, x - arcWidth - 24, (y1 + y2) / 2);
+  }
+};
+
+const drawJump = (p, x, y1, y2, label = "") => {
+  drawArc(p, x - 12, y1, y2 - 8, label);
+  drawArrow(p, { x: x - 18, y: y2 - 14 }, { x: x - 8, y: y2 - 4 });
+};
+
+const decomposeViz = (p) => {
+  const width = 800;
+  const height = 800;
+  const padding = 50;
+
+  const subtrahend = 18;
+  const minuend = 32;
+  const difference = minuend - subtrahend;
+
+  const numberLine = {
+    markers: [
+      { value: minuend },
+      { value: minuend - 10 },
+      { value: minuend - 10 - 2 },
+      { value: difference },
+    ],
+    jumps: [
+      { from: 0, to: 1, label: "- 10" },
+      { from: 1, to: 2, label: "- 2" },
+      { from: 2, to: 3, label: "- 6" },
+    ],
+  };
+  numberLine.markers.forEach((marker, i) => {
+    const y = p.map(
+      marker.value,
+      minuend,
+      difference,
+      padding * 2,
+      height - padding * 2,
+    );
+    marker.y = y;
+    marker.x = width / 2;
+  });
+
+  const lineLength = height - padding * 2;
+  const fps = 12;
+
+  p.setup = () => {
+    p.createCanvas(width, height);
+    p.smooth();
+    p.frameRate(fps);
+  };
+
+  p.draw = () => {
+    p.clear();
+    drawOpenNumberLine(p, {
+      x1: width / 2,
+      y1: padding,
+      x2: width / 2,
+      y2: height - padding,
+    });
+
+    numberLine.markers.forEach((marker) => {
+      drawMarker(p, marker.x, marker.y, marker.value);
+    });
+
+    numberLine.jumps.forEach((jump) => {
+      const from = numberLine.markers[jump.from];
+      const to = numberLine.markers[jump.to];
+      drawJump(p, width / 2, from.y, to.y, jump.label);
+    });
+  };
+};
+
 const vis = (p) => {
   const config = {
     numberLineRandomness: 1,
@@ -121,33 +322,22 @@ const vis = (p) => {
     p.stroke(200, 0, 0);
     p.strokeWeight(2);
 
-    progress += 0.2;
+    if (progress < p.PI) {
+      progress += 0.15;
+    }
 
     let currentRandomness = p.map(progress, 0, p.PI, 0.1, arcRandomness);
     currentRandomness = p.constrain(currentRandomness, 0, arcRandomness);
 
-    if (progress < p.PI) {
-      drawWobblyArc(
-        midPoint,
-        y - arcHeight,
-        Math.abs(startPoint - endPoint),
-        arcHeight * 2,
-        p.TWO_PI,
-        p.TWO_PI - progress,
-        currentRandomness,
-      );
-    } else {
-      drawWobblyArc(
-        midPoint,
-        y - arcHeight,
-        Math.abs(startPoint - endPoint),
-        arcHeight * 2,
-        p.TWO_PI,
-        p.PI,
-        currentRandomness,
-      );
-    }
-
+    drawWobblyArc(
+      midPoint,
+      y - arcHeight,
+      Math.abs(startPoint - endPoint),
+      arcHeight * 2,
+      p.TWO_PI,
+      p.TWO_PI - progress,
+      currentRandomness,
+    );
     updateProgress(progress);
   }
 
@@ -221,4 +411,4 @@ const vis = (p) => {
   }
 };
 
-new p5(vis, "vis");
+new p5(decomposeViz, "vis");
