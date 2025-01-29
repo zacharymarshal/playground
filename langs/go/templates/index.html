@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic CSP Example</title>
+    <style>
+      /* Unsafe inline style */
+      body {
+        background-color: #f3f3f3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to the Dynamic CSP Page</h1>
+    <a href="javascript:alert('Unsafe Inline Event Handler Executed')"
+      >Click me</a
+    >
+    <a href="#" onclick="alert('Unsafe Inline Event Handler Executed')"
+      >Click me</a
+    >
+    <!-- Unsafe inline script -->
+    <script>
+      console.log("This is an unsafe inline script running!");
+      alert("Unsafe Inline Script Executed");
+    </script>
+  </body>
+</html>
